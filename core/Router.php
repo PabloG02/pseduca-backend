@@ -29,7 +29,7 @@ class Router
         $controllerClass = "App\\Controllers\\{$controller}Controller";
 
         if (class_exists($controllerClass)) {
-            $controllerInstance = new $controllerClass();
+            $controllerInstance = DIContainer::resolve($controllerClass);
             if (method_exists($controllerInstance, $action)) {
                 $controllerInstance->$action();
             } else {
