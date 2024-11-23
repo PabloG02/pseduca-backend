@@ -39,7 +39,7 @@ CREATE TABLE Resource
     id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name            VARCHAR(180) NOT NULL,
     acronym         VARCHAR(10)  NOT NULL,
-    year            YEAR         NOT NULL CHECK (year >= 1900 AND year <= YEAR(CURRENT_DATE)),
+    year            YEAR         NOT NULL,
     description     TEXT,
     notes           TEXT,
     image_uri       VARCHAR(255), -- Alt. text will be the name of the resource
