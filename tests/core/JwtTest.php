@@ -8,6 +8,8 @@ use Core\Jwt;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use ReflectionMethod;
+use ReflectionProperty;
 use RuntimeException;
 
 class JwtTest extends TestCase
@@ -51,9 +53,31 @@ class JwtTest extends TestCase
 
     public function testVerifyWithExpiredToken(): void
     {
-        // TODO: Implement test
-    }
+        // Create an expired token
+        $now = new DateTimeImmutable();
+        $expiredPayload = [
+            'iss' => 'pseduca-backend',
+            'sub' => 'testuser',
+            'aud' => ['pseduca-frontend'],
+            'exp' => $now->getTimestamp() - 10, // Expired 10 seconds ago
+            'nbf' => $now->getTimestamp() - 20,
+            'iat' => $now->getTimestamp() - 30,
+            'jti' => bin2hex(random_bytes(16)),
+        ];
 
+        $encodeMethod = new ReflectionMethod(Jwt::class, 'base64UrlEncode');
+        $secret = new ReflectionProperty(Jwt::class, 'secret');
+        $header = $encodeMethod->invoke(null, json_encode(['typ' => 'JWT', 'alg' => 'HS256']));
+        $payload = $encodeMethod->invoke(null, json_encode($expiredPayload));
+        $signature = $encodeMethod->invoke(null, hash_hmac('sha256', "$header.$payload", $secret->getValue(), true));
+        $expiredToken = "$header.$payload.$signature";
+    
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Token has expired');
+    
+        Jwt::verify($expiredToken);
+    }
+    
     public function testVerifyWithInvalidSignature(): void
     {
         $token = Jwt::create('testuser');
@@ -100,11 +124,55 @@ class JwtTest extends TestCase
 
     public function testVerifyWithFutureNbf(): void
     {
-        // TODO: Implement test
+        // Create a token with a future "not before" timestamp
+        $now = new DateTimeImmutable();
+        $futurePayload = [
+            'iss' => 'pseduca-backend',
+            'sub' => 'testuser',
+            'aud' => ['pseduca-frontend'],
+            'exp' => $now->getTimestamp() + 3600,
+            'nbf' => $now->getTimestamp() + 600, // Valid 10 minutes from now
+            'iat' => $now->getTimestamp(),
+            'jti' => bin2hex(random_bytes(16)),
+        ];
+
+        $encodeMethod = new ReflectionMethod(Jwt::class, 'base64UrlEncode');
+        $secret = new ReflectionProperty(Jwt::class, 'secret');
+        $header = $encodeMethod->invoke(null, json_encode(['typ' => 'JWT', 'alg' => 'HS256']));
+        $payload = $encodeMethod->invoke(null, json_encode($futurePayload));
+        $signature = $encodeMethod->invoke(null, hash_hmac('sha256', "$header.$payload", $secret->getValue(), true));
+        $futureToken = "$header.$payload.$signature";
+    
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Token not yet valid');
+    
+        Jwt::verify($futureToken);
     }
 
     public function testVerifyWithMissingExpClaim(): void
     {
-        // TODO: Implement test
+        // Create a token without the "exp" claim
+        $now = new DateTimeImmutable();
+        $payloadWithoutExp = [
+            'iss' => 'pseduca-backend',
+            'sub' => 'testuser',
+            'aud' => ['pseduca-frontend'],
+            // 'exp' has been omitted
+            'nbf' => $now->getTimestamp(),
+            'iat' => $now->getTimestamp(),
+            'jti' => bin2hex(random_bytes(16)),
+        ];
+
+        $encodeMethod = new ReflectionMethod(Jwt::class, 'base64UrlEncode');
+        $secret = new ReflectionProperty(Jwt::class, 'secret');
+        $header = $encodeMethod->invoke(null, json_encode(['typ' => 'JWT', 'alg' => 'HS256']));
+        $payload = $encodeMethod->invoke(null, json_encode($payloadWithoutExp));
+        $signature = $encodeMethod->invoke(null, hash_hmac('sha256', "$header.$payload", $secret->getValue(), true));
+        $tokenWithoutExp = "$header.$payload.$signature";
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Token missing expiration claim');
+
+        Jwt::verify($tokenWithoutExp);
     }
 }
