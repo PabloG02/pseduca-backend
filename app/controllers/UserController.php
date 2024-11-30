@@ -97,7 +97,7 @@ class UserController
         }
     }
 
-    private function delete(): void
+    function delete(): void
     {
         $username = filter_input(INPUT_POST, 'username');
 
