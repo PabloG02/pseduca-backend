@@ -78,7 +78,8 @@ class UserRepository
             $row['name'],
             (bool)$row['activated'],
             new DateTimeImmutable($row['created_at']),
-            $row['last_login'] ? new DateTimeImmutable($row['last_login']) : null
+            $row['last_login'] ? new DateTimeImmutable($row['last_login']) : null,
+            true
         );
     }
 
@@ -193,7 +194,8 @@ class UserRepository
                 $row['name'],
                 (bool)$row['activated'],
                 new DateTimeImmutable($row['created_at']),
-                $row['last_login'] ? new DateTimeImmutable($row['last_login']) : null
+                $row['last_login'] ? new DateTimeImmutable($row['last_login']) : null,
+                true
             );
         }
 

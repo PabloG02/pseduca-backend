@@ -6,6 +6,7 @@ use App\Entities\User;
 use App\Filters\UserFilter;
 use App\Services\UserService;
 use Core\Inject;
+use Core\Jwt;
 use PDOException;
 
 class UserController
@@ -175,5 +176,39 @@ class UserController
 
         $data = json_decode($jsonData, true, 512, JSON_THROW_ON_ERROR);
         return UserFilter::fromArray($data);
+    }
+
+    public function login(): void
+    {
+        $username = filter_input(INPUT_POST, 'username');
+        $password = filter_input(INPUT_POST, 'password');
+
+        if (!$username || !$password) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Username and password are required.']);
+            return;
+        }
+
+        try {
+            $user = $this->userService->get($username);
+
+            if (!$user) {
+                http_response_code(404);
+                echo json_encode(['error' => 'User not found.']);
+                return;
+            }
+
+            if (!password_verify($password, $user->password)) {
+                http_response_code(401);
+                echo json_encode(['error' => 'Invalid password.']);
+                return;
+            }
+
+            http_response_code(200);
+            echo json_encode(['token' => Jwt::create($username)]);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['error' => $e->getMessage()]);
+        }
     }
 }
