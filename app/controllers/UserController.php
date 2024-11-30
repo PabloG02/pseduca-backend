@@ -145,18 +145,8 @@ class UserController
                 return;
             }
 
-            // Remove sensitive information before sending
-            $userData = [
-                'username' => $user->username,
-                'email' => $user->email,
-                'name' => $user->name,
-                'activated' => $user->activated,
-                'createdAt' => $user->createdAt->format('Y-m-d H:i:s'),
-                'lastLogin' => $user->lastLogin?->format('Y-m-d H:i:s')
-            ];
-
             http_response_code(200);
-            echo json_encode($userData);
+            echo json_encode($user);
         } catch (PDOException $e) {
             http_response_code(500);
             echo json_encode(['error' => $e->getMessage()]);

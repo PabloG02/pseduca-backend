@@ -3,9 +3,11 @@
 namespace App\Entities;
 
 use DateTimeImmutable;
+use DateTimeInterface;
+use JsonSerializable;
 use ValueError;
 
-class User
+class User implements JsonSerializable
 {
     public string $username;
     public string $password;
@@ -31,5 +33,18 @@ class User
         $this->activated = $activated;
         $this->createdAt = $createdAt;
         $this->lastLogin = $lastLogin;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'username' => $this->username,
+            // Password is not serialized because it should never be sent to the client
+            'email' => $this->email,
+            'name' => $this->name,
+            'activated' => $this->activated,
+            'createdAt' => $this->createdAt?->format(DateTimeInterface::ATOM),
+            'lastLogin' => $this->lastLogin?->format(DateTimeInterface::ATOM),
+        ];
     }
 }
