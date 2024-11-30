@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Entities\User;
+use App\Filters\UserFilter;
 use App\Services\UserService;
 use Core\Inject;
 use PDOException;
@@ -44,5 +45,145 @@ class UserController
             http_response_code(500);
             echo json_encode(['error' => $e->getMessage()]);
         }
+    }
+
+    public function update(): void
+    {
+        $username = filter_input(INPUT_POST, 'username');
+        $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+        $name = filter_input(INPUT_POST, 'name');
+        $activated = filter_input(INPUT_POST, 'activated', FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+
+        // Check for required fields
+        if (!isset($username)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Username is required.']);
+            return;
+        }
+
+        if (isset($email) && $email === false) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid email.']);
+            return;
+        }
+
+        try {
+            $user = $this->userService->get($username);
+
+            if (!$user) {
+                http_response_code(404);
+                echo json_encode(['error' => 'User not found.']);
+                return;
+            }
+
+            // Update fields if provided
+            if ($email !== null) {
+                $user->email = $email;
+            }
+            if ($name !== null) {
+                $user->name = $name;
+            }
+            if ($activated !== null) {
+                $user->activated = $activated;
+            }
+
+            $this->userService->update($user);
+
+            http_response_code(200);
+            echo json_encode(['message' => 'User updated successfully.']);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+    }
+
+    private function delete(): void
+    {
+        $username = filter_input(INPUT_POST, 'username');
+
+        if (!$username) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Username is required.']);
+            return;
+        }
+
+        try {
+            $user = $this->userService->get($username);
+
+            if (!$user) {
+                http_response_code(404);
+                echo json_encode(['error' => 'User not found.']);
+                return;
+            }
+
+            $this->userService->delete($username);
+
+            http_response_code(200);
+            echo json_encode(['message' => 'User deleted successfully.']);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function get(): void
+    {
+        $username = filter_input(INPUT_GET, 'username');
+
+        if (!$username) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Username is required.']);
+            return;
+        }
+
+        try {
+            $user = $this->userService->get($username);
+
+            if (!$user) {
+                http_response_code(404);
+                echo json_encode(['error' => 'User not found.']);
+                return;
+            }
+
+            // Remove sensitive information before sending
+            $userData = [
+                'username' => $user->username,
+                'email' => $user->email,
+                'name' => $user->name,
+                'activated' => $user->activated,
+                'createdAt' => $user->createdAt->format('Y-m-d H:i:s'),
+                'lastLogin' => $user->lastLogin?->format('Y-m-d H:i:s')
+            ];
+
+            http_response_code(200);
+            echo json_encode($userData);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function list(): void
+    {
+        try {
+            $filter = $this->createFilterFromRequest();
+            $users = $this->userService->list($filter);
+            http_response_code(200);
+            echo json_encode($users);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+    }
+
+    private function createFilterFromRequest(): UserFilter
+    {
+        $jsonData = file_get_contents('php://input');
+        if (empty($jsonData)) {
+            return new UserFilter();
+        }
+
+        $data = json_decode($jsonData, true, 512, JSON_THROW_ON_ERROR);
+        return UserFilter::fromArray($data);
     }
 }
