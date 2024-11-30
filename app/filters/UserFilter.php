@@ -142,7 +142,7 @@ class UserFilter {
         }
 
         if (isset($data['activated'])) {
-            $filter->setActivated((bool)$data['activated']);
+            $filter->setActivated(filter_var($data['activated'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE));
         }
 
         if (isset($data['created_at_from'])) {
