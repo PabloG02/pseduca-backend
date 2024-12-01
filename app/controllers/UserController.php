@@ -205,6 +205,12 @@ class UserController
                 return;
             }
 
+            if ($user->activated === false) {
+                http_response_code(403);
+                echo json_encode(['error' => 'User is not activated.']);
+                return;
+            }
+
             http_response_code(200);
             echo json_encode(['token' => Jwt::create($username)]);
         } catch (PDOException $e) {
