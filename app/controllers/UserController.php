@@ -23,7 +23,7 @@ class UserController
     {
         $username = filter_var($_POST['username'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
         $password = filter_var($_POST['password'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
-        $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
+        $email = isset($_POST['email']) ? filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) : null;
         $name = filter_var($_POST['name'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
 
         // Check for required fields
@@ -168,7 +168,7 @@ class UserController
         }
     }
 
-    private function createFilterFromRequest(): UserFilter
+    protected function createFilterFromRequest(): UserFilter
     {
         $jsonData = file_get_contents('php://input');
         if (empty($jsonData)) {
