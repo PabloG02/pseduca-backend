@@ -21,7 +21,7 @@ class WebpageTextController
     public function get(): void
     {
         try {
-            $textKey = filter_input(INPUT_POST, 'textKey');
+            $textKey = filter_var($_POST['textKey'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
             if (!isset($textKey)) {
                 http_response_code(400);
                 echo json_encode(['error' => 'textKey is required.']);
@@ -59,8 +59,8 @@ class WebpageTextController
 
     public function update(): void
     {
-        $textKey = filter_input(INPUT_POST, 'textKey');
-        $text = filter_input(INPUT_POST, 'text');
+        $textKey = filter_var($_POST['textKey'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
+        $text = filter_var($_POST['text'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
 
         if (!isset($textKey) || !isset($text)) {
             http_response_code(400);
@@ -78,7 +78,8 @@ class WebpageTextController
         }
     }
 
-    private function createFilterFromRequest(): WebpageTextFilter {
+    private function createFilterFromRequest(): WebpageTextFilter
+    {
         $jsonData = file_get_contents('php://input');
         if (empty($jsonData)) {
             return new WebpageTextFilter();

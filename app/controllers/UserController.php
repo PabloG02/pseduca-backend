@@ -19,11 +19,12 @@ class UserController
         $this->userService = $userService;
     }
 
-    public function create(): void {
-        $username = filter_input(INPUT_POST, 'username');
-        $password = filter_input(INPUT_POST, 'password');
-        $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
-        $name = filter_input(INPUT_POST, 'name');
+    public function create(): void
+    {
+        $username = filter_var($_POST['username'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
+        $password = filter_var($_POST['password'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
+        $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
+        $name = filter_var($_POST['name'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
 
         // Check for required fields
         if (!isset($username) || !isset($password) || !isset($email) || !isset($name)) {
@@ -50,10 +51,10 @@ class UserController
 
     public function update(): void
     {
-        $username = filter_input(INPUT_POST, 'username');
-        $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
-        $name = filter_input(INPUT_POST, 'name');
-        $activated = filter_input(INPUT_POST, 'activated', FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        $username = filter_var($_POST['username'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
+        $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
+        $name = filter_var($_POST['name'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
+        $activated = filter_var($_POST['activated'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 
         // Check for required fields
         if (!isset($username)) {
@@ -100,7 +101,7 @@ class UserController
 
     function delete(): void
     {
-        $username = filter_input(INPUT_POST, 'username');
+        $username = filter_var($_POST['username'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
 
         if (!$username) {
             http_response_code(400);
@@ -129,7 +130,7 @@ class UserController
 
     public function get(): void
     {
-        $username = filter_input(INPUT_GET, 'username');
+        $username = filter_var($_POST['username'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
 
         if (!$username) {
             http_response_code(400);
@@ -180,8 +181,8 @@ class UserController
 
     public function login(): void
     {
-        $username = filter_input(INPUT_POST, 'username');
-        $password = filter_input(INPUT_POST, 'password');
+        $username = filter_var($_POST['username'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
+        $password = filter_var($_POST['password'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
 
         if (!$username || !$password) {
             http_response_code(400);
