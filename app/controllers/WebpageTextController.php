@@ -8,7 +8,7 @@ use App\Services\WebpageTextService;
 use Core\Inject;
 use PDOException;
 
-class WebpageTextController
+class WebpageTextController extends BaseController
 {
     #[Inject]
     private WebpageTextService $webpageTextService;
@@ -59,6 +59,12 @@ class WebpageTextController
 
     public function update(): void
     {
+        if (!$this->hasRole('admin')) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Unauthorized.']);
+            return;
+        }
+
         $textKey = filter_var($_POST['textKey'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
         $text = filter_var($_POST['text'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
 

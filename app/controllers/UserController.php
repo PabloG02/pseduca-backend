@@ -9,7 +9,7 @@ use Core\Inject;
 use Core\Jwt;
 use PDOException;
 
-class UserController
+class UserController extends BaseController
 {
     #[Inject]
     private UserService $userService;
@@ -101,6 +101,12 @@ class UserController
 
     function delete(): void
     {
+        if (!$this->hasRole('admin')) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Unauthorized.']);
+            return;
+        }
+
         $username = filter_var($_POST['username'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
 
         if (!$username) {
@@ -130,6 +136,12 @@ class UserController
 
     public function get(): void
     {
+        if (!$this->hasRole('admin')) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Unauthorized.']);
+            return;
+        }
+
         $username = filter_var($_POST['username'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
 
         if (!$username) {
@@ -157,6 +169,12 @@ class UserController
 
     public function list(): void
     {
+        if (!$this->hasRole('admin')) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Unauthorized.']);
+            return;
+        }
+
         try {
             $filter = $this->createFilterFromRequest();
             $users = $this->userService->list($filter);
