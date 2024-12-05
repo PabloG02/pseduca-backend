@@ -19,17 +19,16 @@ CREATE TABLE User
 
 CREATE TABLE Role
 (
-    id   INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) UNIQUE NOT NULL
+    name VARCHAR(50) PRIMARY KEY
 );
 
 CREATE TABLE UserRole
 (
     user_id VARCHAR(50),
-    role_id INT UNSIGNED,
+    role_id VARCHAR(50),
     PRIMARY KEY (user_id, role_id),
     FOREIGN KEY (user_id) REFERENCES User (username) ON DELETE CASCADE,
-    FOREIGN KEY (role_id) REFERENCES Role (id) ON DELETE CASCADE
+    FOREIGN KEY (role_id) REFERENCES Role (name) ON DELETE CASCADE
 );
 
 -- Resources

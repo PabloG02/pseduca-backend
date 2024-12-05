@@ -61,8 +61,10 @@ class UserRepository
     public function find(string $username): ?User
     {
         $stmt = $this->db->prepare(
-            "SELECT username, password, email, name, activated, created_at, last_login " .
-            "FROM User WHERE username = ?"
+            "SELECT username, password, email, name, activated, created_at, last_login, GROUP_CONCAT(UserRole.role_id) AS roles " .
+            "FROM User LEFT JOIN UserRole ON User.username = UserRole.user_id " .
+            "WHERE username = ? ".
+            "GROUP BY username"
         );
         $stmt->execute([$username]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -79,8 +81,10 @@ class UserRepository
             (bool)$row['activated'],
             new DateTimeImmutable($row['created_at']),
             $row['last_login'] ? new DateTimeImmutable($row['last_login']) : null,
+            $row['roles'] ? array_filter(explode(',', $row['roles'])) : [],
             true
         );
+
     }
 
     public function findAll(?UserFilter $filter = null): array {
@@ -150,12 +154,16 @@ class UserRepository
         $totalCount = $stmt->fetchColumn();
 
         // Build the main query to fetch data
-        $sql = "SELECT username, password, email, name, activated, created_at, last_login FROM User";
+        $sql = "SELECT username, password, email, name, activated, created_at, last_login, GROUP_CONCAT(UserRole.role_id) AS roles " .
+            "FROM User LEFT JOIN UserRole ON User.username = UserRole.user_id";
 
         // Add conditions to the main query
         if (!empty($conditions)) {
             $sql .= " WHERE " . implode(" AND ", $conditions);
         }
+
+        // Add GROUP BY clause
+        $sql .= " GROUP BY User.username";
 
         // Add sorting
         if ($filter && $filter->getOrderBy()) {
@@ -195,6 +203,7 @@ class UserRepository
                 (bool)$row['activated'],
                 new DateTimeImmutable($row['created_at']),
                 $row['last_login'] ? new DateTimeImmutable($row['last_login']) : null,
+                $row['roles'] ? array_filter(explode(',', $row['roles'])) : [],
                 true
             );
         }

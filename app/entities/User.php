@@ -16,6 +16,7 @@ class User implements JsonSerializable
     public bool $activated;
     public ?DateTimeImmutable $createdAt;
     public ?DateTimeImmutable $lastLogin;
+    public array $roles;
 
     public function __construct(
         string $username,
@@ -25,6 +26,7 @@ class User implements JsonSerializable
         bool $activated = false,
         ?DateTimeImmutable $createdAt = null,
         ?DateTimeImmutable $lastLogin = null,
+        array $roles = [],
         bool $isPasswordHashed = false
     ) {
         $this->username = $username;
@@ -34,6 +36,7 @@ class User implements JsonSerializable
         $this->activated = $activated;
         $this->createdAt = $createdAt;
         $this->lastLogin = $lastLogin;
+        $this->roles = $roles;
     }
 
     private function hashPassword(string $password): string
@@ -51,6 +54,7 @@ class User implements JsonSerializable
             'activated' => $this->activated,
             'createdAt' => $this->createdAt?->format(DateTimeInterface::ATOM),
             'lastLogin' => $this->lastLogin?->format(DateTimeInterface::ATOM),
+            'roles' => $this->roles
         ];
     }
 }
