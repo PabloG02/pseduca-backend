@@ -14,10 +14,10 @@ class Database
     {
         if (!isset(self::$connection)) {
             try {
-                $host = 'localhost:3306';
-                $db = 'pseduca';
-                $user = 'root';
-                $pass = 'password';
+                $host = $GLOBALS['database']['host'];
+                $db = $GLOBALS['database']['name'];
+                $user = $GLOBALS['database']['user'];
+                $pass = $GLOBALS['database']['password'];
 
                 $dsn = "mysql:host=$host;dbname=$db";
                 $options = [

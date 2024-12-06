@@ -30,8 +30,7 @@ class Jwt
      */
     public static function __constructStatic(): void
     {
-//        $secret = getenv('JWT_SECRET');
-        $secret = "fYz2mh6JUkIwNBMKP92zgSNm+r+4UytqnujKBUin0iFv9dQ+zw14oYJByjyHt149";
+        $secret = $GLOBALS['jwt']['secret'];
         if (!$secret) {
             throw new RuntimeException('JWT_SECRET environment variable must be set');
         }
