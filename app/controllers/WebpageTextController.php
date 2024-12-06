@@ -21,10 +21,10 @@ class WebpageTextController extends BaseController
     public function get(): void
     {
         try {
-            $textKey = filter_var($_POST['textKey'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
+            $textKey = filter_var($_POST['text_key'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
             if (!isset($textKey)) {
                 http_response_code(400);
-                echo json_encode(['error' => 'textKey is required.']);
+                echo json_encode(['error' => 'text_key is required.']);
                 return;
             }
 
@@ -65,12 +65,12 @@ class WebpageTextController extends BaseController
             return;
         }
 
-        $textKey = filter_var($_POST['textKey'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
+        $textKey = filter_var($_POST['text_key'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
         $text = filter_var($_POST['text'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
 
         if (!isset($textKey) || !isset($text)) {
             http_response_code(400);
-            echo json_encode(['error' => 'Both textKey and text are required.']);
+            echo json_encode(['error' => 'Both text_key and text are required.']);
             return;
         }
 
