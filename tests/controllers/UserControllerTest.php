@@ -3,6 +3,7 @@
 namespace Tests\Controllers;
 
 require_once __DIR__ . '/../../autoload.php';
+require_once __DIR__ . '/../../loadconfig.php';
 
 use App\Controllers\UserController;
 use App\Filters\UserFilter;
@@ -22,8 +23,12 @@ class UserControllerTest extends TestCase
         $userService = DIContainer::resolve(UserService::class);
         $this->userController = $this->getMockBuilder(UserController::class)
             ->setConstructorArgs([$userService])
-            ->onlyMethods(['createFilterFromRequest'])
+            ->onlyMethods(['hasRole', 'createFilterFromRequest'])
             ->getMock();
+
+        // getallheaders() is not available in PHPUnit, so we mock it
+        $this->userController->method('hasRole')
+            ->willReturn(true);
     }
 
     protected function tearDown(): void
@@ -108,8 +113,7 @@ class UserControllerTest extends TestCase
 
         // Capture the output
         ob_start();
-        $controller = DIContainer::resolve(UserController::class);
-        $controller->create();
+        $this->userController->create();
         $output = ob_get_clean();
 
         // Decode the JSON response
@@ -131,8 +135,7 @@ class UserControllerTest extends TestCase
 
         // Capture the output
         ob_start();
-        $controller = DIContainer::resolve(UserController::class);
-        $controller->create();
+        $this->userController->create();
         $output = ob_get_clean();
 
         // Decode the JSON response
@@ -154,8 +157,7 @@ class UserControllerTest extends TestCase
 
         // Capture the output
         ob_start();
-        $controller = DIContainer::resolve(UserController::class);
-        $controller->create();
+        $this->userController->create();
         $output = ob_get_clean();
 
         // Decode the JSON response
@@ -175,8 +177,7 @@ class UserControllerTest extends TestCase
 
         // Capture the output
         ob_start();
-        $controller = DIContainer::resolve(UserController::class);
-        $controller->get();
+        $this->userController->get();
         $output = ob_get_clean();
 
         // Decode the JSON response
@@ -197,8 +198,7 @@ class UserControllerTest extends TestCase
 
         // Capture the output
         ob_start();
-        $controller = DIContainer::resolve(UserController::class);
-        $controller->get();
+        $this->userController->get();
         $output = ob_get_clean();
 
         // Decode the JSON response
@@ -217,8 +217,7 @@ class UserControllerTest extends TestCase
 
         // Capture the output
         ob_start();
-        $controller = DIContainer::resolve(UserController::class);
-        $controller->get();
+        $this->userController->get();
         $output = ob_get_clean();
 
         // Decode the JSON response
@@ -239,8 +238,7 @@ class UserControllerTest extends TestCase
 
         // Capture the output
         ob_start();
-        $controller = DIContainer::resolve(UserController::class);
-        $controller->update();
+        $this->userController->update();
         $output = ob_get_clean();
 
         // Decode the JSON response
@@ -260,8 +258,7 @@ class UserControllerTest extends TestCase
 
         // Capture the output
         ob_start();
-        $controller = DIContainer::resolve(UserController::class);
-        $controller->update();
+        $this->userController->update();
         $output = ob_get_clean();
 
         // Decode the JSON response
@@ -281,8 +278,7 @@ class UserControllerTest extends TestCase
 
         // Capture the output
         ob_start();
-        $controller = DIContainer::resolve(UserController::class);
-        $controller->update();
+        $this->userController->update();
         $output = ob_get_clean();
 
         // Decode the JSON response
@@ -326,8 +322,7 @@ class UserControllerTest extends TestCase
 
         // Capture the output
         ob_start();
-        $controller = DIContainer::resolve(UserController::class);
-        $controller->delete();
+        $this->userController->delete();
         $output = ob_get_clean();
 
         // Decode the JSON response
@@ -346,8 +341,7 @@ class UserControllerTest extends TestCase
 
         // Capture the output
         ob_start();
-        $controller = DIContainer::resolve(UserController::class);
-        $controller->delete();
+        $this->userController->delete();
         $output = ob_get_clean();
 
         // Decode the JSON response
@@ -366,8 +360,7 @@ class UserControllerTest extends TestCase
 
         // Capture the output
         ob_start();
-        $controller = DIContainer::resolve(UserController::class);
-        $controller->delete();
+        $this->userController->delete();
         $output = ob_get_clean();
 
         // Decode the JSON response
