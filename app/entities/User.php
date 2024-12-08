@@ -9,10 +9,49 @@ use ValueError;
 
 class User implements JsonSerializable
 {
-    public string $username;
+    public string $username {
+        get => $this->username;
+        set {
+            if (strlen($value) < 3) {
+                throw new ValueError('Username must be at least 3 characters long.');
+            }
+            if (strlen($value) > 20) {
+                throw new ValueError('Username cannot be more than 20 characters long.');
+            }
+            if (!preg_match('/^[a-zA-Z0-9_]+$/', $value)) {
+                throw new ValueError('Username must be alphanumeric and can include underscores.');
+            }
+            $this->username = $value;
+        }
+    }
     public string $password;
-    public string $email;
-    public string $name;
+    public string $email {
+        get => $this->email;
+        set {
+            if (strlen($value) > 255) {
+                throw new ValueError('Email cannot be more than 255 characters long.');
+            }
+            if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                throw new ValueError('Invalid email format.');
+            }
+            $this->email = $value;
+        }
+    }
+    public string $name {
+        get => $this->name;
+        set {
+            if (strlen($value) < 2) {
+                throw new ValueError('Name must be at least 2 characters long.');
+            }
+            if (strlen($value) > 50) {
+                throw new ValueError('Name cannot be more than 50 characters long.');
+            }
+            if (!preg_match("/^[a-zA-Z\s'-]+$/", $value)) {
+                throw new ValueError('Name can only contain letters, spaces, apostrophes, and hyphens.');
+            }
+            $this->name = $value;
+        }
+    }
     public bool $activated;
     public ?DateTimeImmutable $createdAt;
     public ?DateTimeImmutable $lastLogin;
