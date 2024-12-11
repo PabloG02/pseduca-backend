@@ -1,2 +1,5 @@
 # JetBrains configuration files
 .idea/
+
+# User uploads
+uploads/
