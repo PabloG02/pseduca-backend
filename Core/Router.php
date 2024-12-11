@@ -26,6 +26,8 @@ class Router
 
     private function invokeController(string $controller, string $action): void
     {
+        # Controller comes like word-word and has to be converted to WordWord
+        $controller = str_replace(' ', '', ucwords(str_replace('-', ' ', $controller)));
         $controllerClass = "App\\Controllers\\{$controller}Controller";
 
         if (class_exists($controllerClass)) {
