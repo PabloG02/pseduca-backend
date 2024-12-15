@@ -7,6 +7,7 @@ use App\Filters\UserFilter;
 use App\Services\UserService;
 use Core\Inject;
 use Core\Jwt;
+use DateTimeImmutable;
 use PDOException;
 
 class UserController extends BaseController
@@ -231,6 +232,9 @@ class UserController extends BaseController
 
             http_response_code(200);
             echo json_encode(['token' => Jwt::create($username)]);
+
+            $user->lastLogin = new DateTimeImmutable();
+            $this->userService->update($user);
         } catch (PDOException $e) {
             http_response_code(500);
             echo json_encode(['error' => $e->getMessage()]);
