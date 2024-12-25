@@ -221,11 +221,15 @@ CREATE TABLE TeamMember
 
 CREATE TABLE Contact
 (
-    organization_key VARCHAR(50) PRIMARY KEY,
-    address          VARCHAR(255) NOT NULL,
-    email            VARCHAR(100) NOT NULL,
-    phone            VARCHAR(20)
-    -- TODO: google_maps VARCHAR(255)
+    id                    INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    address               VARCHAR(255) NOT NULL,
+    email                 VARCHAR(100) NOT NULL,
+    phone                 VARCHAR(20) NOT NULL,
+    google_maps_embed_url VARCHAR(511) NOT NULL,
+
+    CONSTRAINT chk_google_maps_embed_url CHECK (
+        google_maps_embed_url LIKE 'https://www.google.com/maps/embed?%'
+    )
 );
 
 -- Webpage texts
