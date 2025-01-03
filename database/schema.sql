@@ -157,12 +157,12 @@ CREATE TABLE Article
 (
     id         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     title      VARCHAR(255) NOT NULL,
-    subtitle   TEXT,
-    body       TEXT,
+    subtitle   TEXT         NOT NULL,
+    body       TEXT         NOT NULL,
     image_uri  VARCHAR(255),
     image_alt  VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    -- TODO: Author
+    author     VARCHAR(255) NOT NULL,
 
     CONSTRAINT chk_image_alt CHECK (
         (image_uri IS NULL AND image_alt IS NULL) OR
@@ -224,7 +224,7 @@ CREATE TABLE Contact
     id                    INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     address               VARCHAR(255) NOT NULL,
     email                 VARCHAR(100) NOT NULL,
-    phone                 VARCHAR(20) NOT NULL,
+    phone                 VARCHAR(20)  NOT NULL,
     google_maps_embed_url VARCHAR(511) NOT NULL,
 
     CONSTRAINT chk_google_maps_embed_url CHECK (
