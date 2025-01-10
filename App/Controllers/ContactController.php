@@ -200,4 +200,28 @@ class ContactController extends BaseController
         $data = json_decode($jsonData, true, 512, JSON_THROW_ON_ERROR);
         return ContactFilter::fromArray($data);
     }
+
+    public function sendEmail(): void
+    {
+        $name = filter_var($_POST['name'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
+        $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
+        $subject = filter_var($_POST['subject'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
+        $message = filter_var($_POST['message'], FILTER_DEFAULT, FILTER_FLAG_EMPTY_STRING_NULL);
+
+        if (!$name || !$email || !$subject || !$message) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid or missing required fields.']);
+            return;
+        }
+
+        try {
+            $this->contactService->sendEmail($name, $email, $subject, $message);
+
+            http_response_code(200);
+            echo json_encode(['message' => 'Email sent successfully.']);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+    }
 }

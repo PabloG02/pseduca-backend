@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Entities\Contact;
 use App\Filters\ContactFilter;
 use App\Repositories\ContactRepository;
+use Core\EmailService;
 use Core\Inject;
 
 class ContactService
@@ -40,5 +41,10 @@ class ContactService
     public function list(?ContactFilter $filter = null): array
     {
         return $this->contactRepository->findAll($filter);
+    }
+
+    public function sendEmail(string $name, string $email, string $subject, string $message): bool
+    {
+        return EmailService::sendEmail($name, $email, $subject, $message);
     }
 }
