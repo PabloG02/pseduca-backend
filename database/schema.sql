@@ -239,3 +239,12 @@ CREATE TABLE WebpageText
     text_key VARCHAR(50) PRIMARY KEY,
     text     TEXT NOT NULL
 );
+
+CREATE TABLE Courses
+(
+    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name        VARCHAR(255) NOT NULL,
+    description TEXT,
+    image_uri   VARCHAR(255),
+    url         VARCHAR(255),
+);
