@@ -215,7 +215,15 @@ CREATE TABLE TeamMember
 
 -- Tests and Programs
 
--- TODO
+CREATE TABLE Program
+(
+    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name        VARCHAR(255) NOT NULL,
+    description TEXT         NOT NULL,
+    image_uri   VARCHAR(255),
+    image_alt   VARCHAR(255),
+    url         VARCHAR(255)
+);
 
 -- Contact
 
