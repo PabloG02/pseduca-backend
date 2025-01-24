@@ -3,9 +3,11 @@
 namespace App\Entities;
 
 use DateTimeImmutable;
+use DateTimeInterface;
+use JsonSerializable;
 use ValueError;
 
-class Course
+class Course implements JsonSerializable
 {
     public int $id;
     public string $name {
@@ -66,5 +68,18 @@ class Course
         $this->description = $description;
         $this->imageUri = $imageUri;
         $this->url = $url;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'description' => $this->description,
+            'startDate' => $this->startDate->format(DateTimeInterface::ATOM),
+            'endDate' => $this->endDate->format(DateTimeInterface::ATOM),
+            'imageUri' => $this->imageUri,
+            'url' => $this->url,
+        ];
     }
 }
